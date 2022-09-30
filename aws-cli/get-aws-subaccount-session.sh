@@ -11,7 +11,7 @@ app_subtitle="** Establish an AWS CLI session with MFA to an AWS subaccount usin
 
 
 
-## alter the values below to your target subaccount and target role as needed, point ## 
+## alter the values below to your target subaccount and target role as needed ## 
 ## optionally, you can move this var declaration outta here and into other parts of your terminal environment as you see fit
 
 export AWS_PROFILE=default
@@ -73,8 +73,7 @@ fi
 
 
 
-## this content is sourced from: https://github.com/sweharris/aws-cli-mfa/blob/master/get-aws-creds ##
-## this content has been modifed a little
+## this content is sourced from https://github.com/sweharris/aws-cli-mfa/blob/master/get-aws-creds and has been modified a bit ##
 
 # This uses MFA devices to get temporary (eg 12 hour) credentials.  Requires
 # a TTY for user input.
@@ -142,11 +141,6 @@ $tokens" >&2
   return
 fi
 
-# echo export AWS_PROFILE=$AWS_PROFILE
-# echo export AWS_SESSION_TOKEN=$session
-# echo export AWS_SECRET_ACCESS_KEY=$secret
-# echo export AWS_ACCESS_KEY_ID=$access
-
 echo Keys valid until $expire >&2
 
 export AWS_PROFILE=$AWS_PROFILE
@@ -154,7 +148,7 @@ export AWS_SESSION_TOKEN=$session
 export AWS_SECRET_ACCESS_KEY=$secret
 export AWS_ACCESS_KEY_ID=$access
 
-######################################################################################################
+#################################################################################################################################
 
 
 
