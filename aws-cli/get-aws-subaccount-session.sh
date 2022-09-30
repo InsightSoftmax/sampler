@@ -2,6 +2,7 @@
 
 ## script: ISC AWS Subaccount Session Loader
 ## description: use this to establish an aws cli session to a subaccount using role assumption (switching roles). make sure to have your base aws cli setup with keys/secrets pointed at your primary login account
+## usage: $ chmod +x ./get-aws-subaccount-session.sh
 ## usage: $ . ./get-aws-subaccount-session.sh
 
 app_title="** ISC AWS Subaccount Session Loader **"
