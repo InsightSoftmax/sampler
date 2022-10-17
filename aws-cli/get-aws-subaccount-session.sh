@@ -2,6 +2,7 @@
 
 ## script: ISC AWS Subaccount Session Loader
 ## description: use this to establish an aws cli session to a subaccount using role assumption (switching roles). make sure to have your base aws cli setup with keys/secrets pointed at your primary login account
+## warning!: make sure to use the sourcing "." in the script execution. otherwise, your session won't slurp the env vars created by the script.
 ## usage: $ chmod +x ./get-aws-subaccount-session.sh
 ## usage: $ . ./get-aws-subaccount-session.sh
 
@@ -124,9 +125,17 @@ fi
 
 echo -e "Your MFA device is: ${blue}${device}${reset}" >&2
 
+## option 1: manual mfa token entry 
 echo -ne "Enter your MFA code now: ${blue}" >&2
 read code
 echo -e "${reset}" >&2
+
+## option 2: automated mfa token entry
+# echo -ne "Automating MFA input... ${blue}" >&2
+# totp=$(cat /home/user/storage/development/github/isc/sampler/aws-cli/creds/isc-login_totp)
+# code=$(oathtool -b --totp ${totp})
+# echo -e "${reset}" >&2
+# echo
 
 tokens=$(aws sts get-session-token --serial-number "$device" --token-code $code)
 
