@@ -4,7 +4,7 @@
 ## description: use this to establish an aws cli session to a subaccount using role assumption (switching roles). make sure to have your base aws cli setup with keys/secrets pointed at your primary login account
 ##
 ## make sure to use the sourcing "." in the script execution. otherwise, your session won't slurp the env vars created by the script.
-## if you're using automated mfa input entry via option 2 down below, make sure to place the file /home/${USER}/.aws/mfa/isc-login_totp in your local system. the file should be your aws mfa secret token text string, a 1 line file, with no empty lines after it
+## if you're using automated mfa input entry via option 2 down below, make sure to place the file /${HOME}/.aws/mfa/isc-login_totp in your local system. the file should be your aws mfa secret token text string, a 1 line file, with no empty lines after it
 ##
 ## usage: $ chmod +x ./get-aws-subaccount-session.sh
 ## usage: $ . ./get-aws-subaccount-session.sh
