@@ -135,7 +135,7 @@ echo -e "${reset}" >&2
 
 ## option 2: automated mfa token entry
 # echo -ne "Automating MFA input... ${blue}" >&2
-# totp=$(cat /home/${USER}/.aws/mfa/isc-login_totp)
+# totp=$(cat /${HOME}/.aws/mfa/isc-login_totp)
 # code=$(oathtool -b --totp ${totp})
 # echo -e "${reset}" >&2
 # echo
