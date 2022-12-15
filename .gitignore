@@ -132,3 +132,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+aws-cli/get-aws-subaccount-session.local.sh

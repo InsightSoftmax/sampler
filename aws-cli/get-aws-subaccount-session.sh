@@ -23,6 +23,7 @@ export AWS_PROFILE=default
 export aws_target_subaccount_name=gross-eng-dev
 export aws_target_subaccount_id=235758441054
 export aws_target_subaccount_role=isc-login_assumed-role_eng_power-users
+export aws_target_subaccount_session_seconds=3600
 
 ################################################################################
 
@@ -73,6 +74,32 @@ if [[ -z ${aws_target_subaccount_role} ]]; then
   echo "Please set the aws_target_subaccount_role environment variable."
   return
 fi
+if [[ -z ${aws_target_subaccount_session_seconds} ]]; then
+  echo "Please set the aws_target_subaccount_session_seconds environment variable."
+  return
+fi
+
+
+
+
+## wipe previous terminal env vars set by this utility
+
+if [ -n "${AWS_SESSION_TOKEN}" ]
+then
+  echo "Previous session token found. Deleting..."
+  unset AWS_SESSION_TOKEN
+fi
+if [ -n "${AWS_SECRET_ACCESS_KEY}" ]
+then
+  echo "Previous session access key. Deleting..."
+  unset AWS_SECRET_ACCESS_KEY
+fi
+if [ -n "${AWS_ACCESS_KEY_ID}" ]
+then
+  echo "Previous session access key id. Deleting..."
+  unset AWS_ACCESS_KEY_ID
+fi
+echo
 
 
 
@@ -172,8 +199,10 @@ export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN
   --role-arn arn:aws:iam::${aws_target_subaccount_id}:role/${aws_target_subaccount_role} \
   --role-session-name my-session-role \
   --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" \
-  --output text) \
+  --output text \
+  --duration-seconds ${aws_target_subaccount_session_seconds}) \
   )
 
 echo -e "Role ${blue}${aws_target_subaccount_role}${reset} session established to account ${blue}${aws_target_subaccount_name}${reset}" >&2
+echo -e "Session duraction set to ${blue}${aws_target_subaccount_session_seconds}${reset} seconds" >&2
 echo
