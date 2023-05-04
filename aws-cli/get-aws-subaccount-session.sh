@@ -9,15 +9,45 @@
 ## usage: $ chmod +x ./get-aws-subaccount-session.sh
 ## usage: $ . ./get-aws-subaccount-session.sh
 
+## general
+
 app_title="** ISC AWS Subaccount Session Loader **"
 app_subtitle="** Establish an AWS CLI session with MFA to an AWS subaccount using role assumption **"
 
 
 
+## import configuration
+
+#### init
+
+script_start_timestamp=$(date --iso-8601=seconds)
+
+#### system
+
+DEBIAN_FRONTEND=noninteractive
+
+#### colors
+
+cyan='\033[0;96m'
+blue='\033[0;94m'
+reset='\033[0m'
+
+## ##title
+
+echo
+echo -e "${cyan}${app_title}${reset}"
+echo -e "${cyan}${app_subtitle}${reset}"
+echo -e "${cyan}${app_disclaimer}${reset}"
+echo
 
 
-## alter the values below to your target subaccount and target role as needed ## 
-## optionally, you can move this var declaration outta here and into other parts of your terminal environment as you see fit
+
+## import aws cli configs
+
+echo Loading AWS CLI configs...
+echo
+
+#### alter the values below to your target subaccount and target role as needed ## 
 
 export AWS_PROFILE=default
 export aws_target_subaccount_name=gross-eng-dev
@@ -25,38 +55,19 @@ export aws_target_subaccount_id=235758441054
 export aws_target_subaccount_role=isc-login_assumed-role_eng_power-users
 export aws_target_subaccount_session_seconds=3600
 
-################################################################################
+##################################################################################
 
-
-
-
-
-## init
-
-script_start_timestamp=$(date --iso-8601=seconds)
-
-## system
-
-DEBIAN_FRONTEND=noninteractive
-
-## terminal text colors
-
-cyan='\033[0;96m'
-blue='\033[0;94m'
-reset='\033[0m'
-
-## title
-
+echo AWS CLI configs loaded.
 echo
-echo -e "${cyan}${app_title}${reset}"
-echo -e "${cyan}${app_subtitle}${reset}"
-echo
-
-
 
 
 
 ## preflight checks
+
+echo Performing preflight checks...
+echo
+
+#### check env vars
 
 if [[ -z ${AWS_PROFILE} ]]; then
   echo "Please set your AWS_PROFILE environment variable (\"default\" is fine)."
@@ -79,10 +90,7 @@ if [[ -z ${aws_target_subaccount_session_seconds} ]]; then
   return
 fi
 
-
-
-
-## wipe previous terminal env vars set by this utility
+#### wipe previous terminal env vars set by this utility
 
 if [ -n "${AWS_SESSION_TOKEN}" ]
 then
@@ -101,11 +109,14 @@ then
 fi
 echo
 
+echo All preflight checks have cleared.
+echo
 
 
 
+## main
 
-## this content is sourced from https://github.com/sweharris/aws-cli-mfa/blob/master/get-aws-creds and has been modified a bit ##
+#### this content is sourced from https://github.com/sweharris/aws-cli-mfa/blob/master/get-aws-creds and has been modified a bit ##
 
 # This uses MFA devices to get temporary (eg 12 hour) credentials.  Requires
 # a TTY for user input.
@@ -156,16 +167,16 @@ fi
 echo -e "Your MFA device is: ${blue}${device}${reset}" >&2
 
 ## option 1: manual mfa token entry 
-echo -ne "Enter your MFA code now: ${blue}" >&2
-read code
-echo -e "${reset}" >&2
+# echo -ne "Enter your MFA code now: ${blue}" >&2
+# read code
+# echo -e "${reset}" >&2
 
 ## option 2: automated mfa token entry
-# echo -ne "Automating MFA input... ${blue}" >&2
-# totp=$(cat /${HOME}/.aws/mfa/isc-login_totp)
-# code=$(oathtool -b --totp ${totp})
-# echo -e "${reset}" >&2
-# echo
+echo -ne "Automating MFA input... ${blue}" >&2
+totp=$(cat /${HOME}/.aws/mfa/isc-login_totp)
+code=$(oathtool -b --totp ${totp})
+echo -e "${reset}" >&2
+echo
 
 tokens=$(aws sts get-session-token --serial-number "$device" --token-code $code)
 
@@ -188,11 +199,7 @@ export AWS_SESSION_TOKEN=$session
 export AWS_SECRET_ACCESS_KEY=$secret
 export AWS_ACCESS_KEY_ID=$access
 
-#################################################################################################################################
-
-
-
-
+###################################################################################################################################
 
 export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" \
   $(aws sts assume-role \
