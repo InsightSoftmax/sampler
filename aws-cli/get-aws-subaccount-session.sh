@@ -167,16 +167,16 @@ fi
 echo -e "Your MFA device is: ${blue}${device}${reset}" >&2
 
 ## option 1: manual mfa token entry 
-# echo -ne "Enter your MFA code now: ${blue}" >&2
-# read code
-# echo -e "${reset}" >&2
+echo -ne "Enter your MFA code now: ${blue}" >&2
+read code
+echo -e "${reset}" >&2
 
 ## option 2: automated mfa token entry
-echo -ne "Automating MFA input... ${blue}" >&2
-totp=$(cat /${HOME}/.aws/mfa/isc-login_totp)
-code=$(oathtool -b --totp ${totp})
-echo -e "${reset}" >&2
-echo
+# echo -ne "Automating MFA input... ${blue}" >&2
+# totp=$(cat /${HOME}/.aws/mfa/isc-login_totp)
+# code=$(oathtool -b --totp ${totp})
+# echo -e "${reset}" >&2
+# echo
 
 tokens=$(aws sts get-session-token --serial-number "$device" --token-code $code)
 
