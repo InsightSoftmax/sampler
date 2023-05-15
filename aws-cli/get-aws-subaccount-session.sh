@@ -16,9 +16,9 @@ app_subtitle="** Establish an AWS CLI session with MFA to an AWS subaccount usin
 
 
 
-## import configuration
+## init
 
-#### init
+#### time
 
 script_start_timestamp=$(date --iso-8601=seconds)
 
@@ -32,7 +32,7 @@ cyan='\033[0;96m'
 blue='\033[0;94m'
 reset='\033[0m'
 
-## ##title
+#### title
 
 echo
 echo -e "${cyan}${app_title}${reset}"
