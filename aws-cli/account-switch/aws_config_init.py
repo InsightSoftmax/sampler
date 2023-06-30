@@ -4,11 +4,12 @@ client=boto3.client('iam')
 
 username='filip.novovic'
 aws_config_path='/home/filip/.aws/'
-managed_user_policies = client.list_attached_user_policies(UserName='filip.novovic')
-inline_user_policies = client.list_user_policies(UserName='filip.novovic')
+managed_user_policies = client.list_attached_user_policies(UserName=username)
+inline_user_policies = client.list_user_policies(UserName=username)
 groups_call = client.list_groups_for_user(
-    UserName='filip.novovic'
+    UserName=username
 )
+
 
 
 mfas= client.list_mfa_devices(

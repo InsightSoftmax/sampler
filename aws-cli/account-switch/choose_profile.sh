@@ -1,5 +1,5 @@
+python3 get_my_tags.py
 profiles=$(aws configure list-profiles)
-
 set -o noglob         # See special Note, below.
 IFS=$'\n' profiles_br=($profiles)
 set +o noglob
