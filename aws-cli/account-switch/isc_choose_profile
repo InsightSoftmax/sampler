@@ -1,3 +1,9 @@
+mkdir -p ~/.aws
+touch ~/.aws/credentials
+touch ~/.aws/config
+
+cd "${0%/*}"
+
 base_profiles=$(python3 ./isc_get_base_profiles.py)
 echo "Choose your login profile:"
 set -o noglob       

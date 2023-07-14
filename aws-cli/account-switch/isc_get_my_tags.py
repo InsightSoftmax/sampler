@@ -41,22 +41,25 @@ profiles_for_append=''
 with open(home+'/.aws/config') as aws_config:
     all_lines=aws_config.readlines()
     for tag in tags:
-        match_re=re.search(r'(.*)_([0-9]+)_(.*)',tag['Key'])
-        account_name=match_re.group(1)
-        account_id=match_re.group(2)
-        role_id=match_re.group(3)
+        try:
+            match_re=re.search(r'(.*)_([0-9]+)_(.*)',tag['Key'])
+            account_name=match_re.group(1)
+            account_id=match_re.group(2)
+            role_id=match_re.group(3)
 
-        profile_generation=f"{default_profile}_{account_name}_{account_id}_{role_id}"
-        profile_line=f'[profile {profile_generation}]'
-        source_profile_line=f'source_profile={default_profile}'
-        role_arn_line=f'role_arn=arn:aws:iam::{account_id}:role/{role_id}'
-        exists=False
-        for line in all_lines:
-            if profile_line in line:
-                exists=True
-                break
-        if not exists:
-            profiles_for_append+=f"{profile_line}\n{source_profile_line}\n{role_arn_line}\n##DURATION##\n##MFA##\n\n"
+            profile_generation=f"{default_profile}_{account_name}_{account_id}_{role_id}"
+            profile_line=f'[profile {profile_generation}]'
+            source_profile_line=f'source_profile={default_profile}'
+            role_arn_line=f'role_arn=arn:aws:iam::{account_id}:role/{role_id}'
+            exists=False
+            for line in all_lines:
+                if profile_line in line:
+                    exists=True
+                    break
+            if not exists:
+                profiles_for_append+=f"{profile_line}\n{source_profile_line}\n{role_arn_line}\n##DURATION##\n##MFA##\n\n"
+        except:
+            continue
 
 if profiles_for_append != '':
     default_duration=''
