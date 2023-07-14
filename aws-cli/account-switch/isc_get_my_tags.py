@@ -8,12 +8,8 @@ session = botocore.session.Session()
 # Get the default profile name from the session
 default_profile = session.get_config_variable('profile')
 
-
-
-
 # Print the default profile
 print("Default AWS Profile:", default_profile)
-
 
 # Create a session using your AWS credentials
 session = boto3.Session()
@@ -23,13 +19,9 @@ iam_client = session.client('iam')
 
 # Get the current IAM user
 user = iam_client.get_user()
-print(user['User'])
+
 # Extract the user's ARN
 username = user['User']['UserName']
-
-
-
-
 
 # Get the tags applied to the user
 response = iam_client.list_user_tags(UserName=username)
@@ -38,20 +30,17 @@ response = iam_client.list_user_tags(UserName=username)
 tags = response['Tags']
 
 import re
-
-# Print the tags
 assumable_roles=[]
 
 
 from os.path import expanduser
 home = expanduser("~")
 
-profiles_for_append='\n\n'
+profiles_for_append=''
 
 with open(home+'/.aws/config') as aws_config:
     all_lines=aws_config.readlines()
     for tag in tags:
-        print(f"Key: {tag['Key']}, Value: {tag['Value']}")
         match_re=re.search(r'(.*)_([0-9]+)_(.*)',tag['Key'])
         account_name=match_re.group(1)
         account_id=match_re.group(2)
@@ -61,19 +50,27 @@ with open(home+'/.aws/config') as aws_config:
         profile_line=f'[profile {profile_generation}]'
         source_profile_line=f'source_profile={default_profile}'
         role_arn_line=f'role_arn=arn:aws:iam::{account_id}:role/{role_id}'
-        print(all_lines[82])
         exists=False
         for line in all_lines:
             if profile_line in line:
                 exists=True
                 break
         if not exists:
-            profiles_for_append+=f"{profile_line}\n{source_profile_line}\n{role_arn_line}\n##MFA##\n\n"
-        print(profile_line)
+            profiles_for_append+=f"{profile_line}\n{source_profile_line}\n{role_arn_line}\n##DURATION##\n##MFA##\n\n"
 
-
-print(profiles_for_append)
 if profiles_for_append != '':
+    default_duration=''
+    valid=False
+    while not valid:
+        default_duration=input('There are profiles that will be imported. What should be the default token duration(in hours)? ')
+        try:
+            default_duration=int(default_duration)*60*60
+        except Exception as ex:
+            print("Wrong input. It should be an int.")
+        if isinstance(default_duration, int):
+            valid=True
+    profiles_for_append=profiles_for_append.replace('##DURATION##',f'duration_seconds = {default_duration}')
+
     mfas= iam_client.list_mfa_devices(
         UserName=username
     )['MFADevices']
@@ -87,12 +84,10 @@ if profiles_for_append != '':
             print(f'{ind} ',mfa['SerialNumber'])
         chosen_index=int(input('Choose your index:'))
         mfa_serial=mfas[chosen_index]['SerialNumber']
-    #print(mfa_serial)
     profiles_for_append=profiles_for_append.replace('##MFA##',f'mfa_serial = {mfa_serial}')
-print(profiles_for_append)    
 
 with open(home+'/.aws/config','a') as f:
-    f.write(profiles_for_append)
+    f.write(f"\n\n{profiles_for_append}")
 
 
 

@@ -1,0 +1,29 @@
+base_profiles=$(python3 ./isc_get_base_profiles.py)
+echo "Choose your login profile:"
+set -o noglob       
+IFS=$'\n' base_profiles_br=($base_profiles)
+set +o noglob
+select base_profile in "${base_profiles_br[@]}"; do
+    if [[ $base_profile == "None of the above (configure)" ]]; then
+        read -p "Enter new profile name: " new_profile_name
+        aws configure --profile $new_profile_name
+        unset ${base_profile}
+        base_profile=$new_profile_name
+    fi
+    echo "You have chosen $base_profile"
+    export AWS_PROFILE=$base_profile
+    break
+done
+
+
+python3 ./isc_get_my_tags.py
+profiles=$(aws configure list-profiles)
+echo "Choose the role profile:"
+set -o noglob
+IFS=$'\n' profiles_br=($profiles)
+set +o noglob
+select profile in "${profiles_br[@]}"; do
+    echo "You have chosen $profile"
+    export AWS_PROFILE=$profile
+    break
+done
