@@ -1,3 +1,6 @@
+
+## make sure to source this file
+
 mkdir -p ~/.aws
 touch ~/.aws/credentials
 touch ~/.aws/config
