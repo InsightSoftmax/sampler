@@ -47,7 +47,7 @@ with open(home+'/.aws/config') as aws_config:
             account_id=match_re.group(2)
             role_id=match_re.group(3)
 
-            profile_generation=f"{default_profile}_{account_name}_{account_id}_{role_id}"
+            profile_generation=f"isc_{default_profile}_{account_name}_{account_id}_{role_id}"
             profile_line=f'[profile {profile_generation}]'
             source_profile_line=f'source_profile={default_profile}'
             role_arn_line=f'role_arn=arn:aws:iam::{account_id}:role/{role_id}'

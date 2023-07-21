@@ -2,13 +2,14 @@ mkdir -p ~/.aws
 touch ~/.aws/credentials
 touch ~/.aws/config
 
-cd "${0%/*}"
+#cd "${0%/*}"
 
 base_profiles=$(python3 ./isc_get_base_profiles.py)
 echo "Choose your login profile:"
 set -o noglob       
 IFS=$'\n' base_profiles_br=($base_profiles)
 set +o noglob
+base_profile=""
 select base_profile in "${base_profiles_br[@]}"; do
     if [[ $base_profile == "None of the above (configure)" ]]; then
         read -p "Enter new profile name: " new_profile_name
@@ -20,10 +21,11 @@ select base_profile in "${base_profiles_br[@]}"; do
     export AWS_PROFILE=$base_profile
     break
 done
-
+echo $base_profile
 
 python3 ./isc_get_my_tags.py
-profiles=$(aws configure list-profiles)
+profiles=$(python3 ./isc_get_roles.py $base_profile)
+
 echo "Choose the role profile:"
 set -o noglob
 IFS=$'\n' profiles_br=($profiles)
@@ -31,5 +33,6 @@ set +o noglob
 select profile in "${profiles_br[@]}"; do
     echo "You have chosen $profile"
     export AWS_PROFILE=$profile
+    python3 ./isc_set_token_time.py $profile
     break
 done
