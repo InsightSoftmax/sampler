@@ -38,9 +38,12 @@ home = expanduser("~")
 
 profiles_for_append=''
 
+concrete_tag_keys=[]
+
 with open(home+'/.aws/config') as aws_config:
     all_lines=aws_config.readlines()
     for tag in tags:
+        concrete_tag_keys.append(tag['Key'])
         try:
             match_re=re.search(r'(.*)_([0-9]+)_(.*)',tag['Key'])
             account_name=match_re.group(1)
@@ -89,10 +92,24 @@ if profiles_for_append != '':
         mfa_serial=mfas[chosen_index]['SerialNumber']
     profiles_for_append=profiles_for_append.replace('##MFA##',f'mfa_serial = {mfa_serial}')
 
-with open(home+'/.aws/config','a') as f:
-    f.write(f"\n\n{profiles_for_append}")
+if profiles_for_append.strip() !='':
+    with open(home+'/.aws/config','a') as f:
+        f.write(f"\n{profiles_for_append}")
 
+#deletion of the revoked tags
 
+for_deletion=[]
 
+all_text=''
+with open(home+'/.aws/config') as aws_config:
+    all_text=aws_config.read()
+    all_matches=re.findall(f"(isc_{default_profile}.*?)\]",all_text)
+    for match in all_matches:
+        tag_value=re.search("isc_.+?_(.*)",match).group(1)
+        if tag_value not in concrete_tag_keys:
+            for_deletion.append(tag_value)
+    for tag_delete in for_deletion:
+        all_text=re.sub(f"\[.*{tag_delete}\](.|\n)*?\n\n","",all_text)
 
-
+with open(home+'/.aws/config','w') as f:
+    f.write(all_text)
