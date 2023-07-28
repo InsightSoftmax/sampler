@@ -61,6 +61,21 @@ echo AWS CLI configs loaded.
 echo
 
 
+## Check for 1Password CLI
+if ! op --version >/dev/null; then
+    echo "Please install 1Password CLI and make sure 'op' is on your \$PATH."
+    echo "https://1password.com/downloads/command-line/"
+    return
+fi
+echo "Signing in to 1Password CLI..."
+op signin || return		# Prompts for user password if needed
+echo
+echo "Successfully signed in."
+
+#### edit the item title below to choose the right 1password item
+#### this can be the item name or uuid
+onepassword_aws_item="AWS"
+
 
 ## preflight checks
 
@@ -88,6 +103,10 @@ fi
 if [[ -z ${aws_target_subaccount_session_seconds} ]]; then
   echo "Please set the aws_target_subaccount_session_seconds environment variable."
   return
+fi
+if [[ -z ${onepassword_aws_item} ]]; then
+    echo "Please set the onepassword_aws_item shell variable."
+    return
 fi
 
 #### wipe previous terminal env vars set by this utility
@@ -173,8 +192,7 @@ echo -e "Your MFA device is: ${blue}${device}${reset}" >&2
 
 ## option 2: automated mfa token entry
 echo -ne "Automating MFA input... ${blue}" >&2
-totp=$(cat /${HOME}/.aws/mfa/isc-login_totp)
-code=$(oathtool -b --totp ${totp})
+read code < <(op item get "$onepassword_aws_item" --otp)
 echo -e "${reset}" >&2
 echo
 
