@@ -76,7 +76,7 @@ echo "Successfully signed in."
 
 #### edit the item title below to choose the right 1password item
 #### this can be the item name or uuid
-onepassword_aws_item="AWS"
+echo "onepassword_aws_item is set to: '${onepassword_aws_item:-AWS}'"
 
 
 ## preflight checks
