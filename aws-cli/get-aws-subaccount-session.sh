@@ -47,19 +47,36 @@ echo
 echo Loading AWS CLI configs...
 echo
 
-#### alter the values below to your target subaccount and target role as needed ## 
+#### alter the values below to your target subaccount and target role as needed ##
+#### You may set these environment variables before sourcing the
+#### script to override the default values.
 
-export AWS_PROFILE=default
-export aws_target_subaccount_name=gross-eng-dev
-export aws_target_subaccount_id=235758441054
-export aws_target_subaccount_role=isc-login_assumed-role_eng_power-users
-export aws_target_subaccount_session_seconds=3600
+export AWS_PROFILE=${AWS_PROFILE:-default}
+export aws_target_subaccount_name=${aws_target_subaccount_name:-gross-eng-dev}
+export aws_target_subaccount_id=${aws_target_subaccount_id:-235758441054}
+export aws_target_subaccount_role=${aws_target_subaccount_role:-isc-login_assumed-role_eng_power-users}
+export aws_target_subaccount_session_seconds=${aws_target_subaccount_session_seconds:-3600}
 
 ##################################################################################
 
 echo AWS CLI configs loaded.
 echo
 
+
+## Check for 1Password CLI
+if ! op --version >/dev/null; then
+    echo "Please install 1Password CLI and make sure 'op' is on your \$PATH."
+    echo "https://1password.com/downloads/command-line/"
+    return
+fi
+echo "Signing in to 1Password CLI..."
+op signin || return		# Prompts for user password if needed
+echo
+echo "Successfully signed in."
+
+#### edit the item title below to choose the right 1password item
+#### this can be the item name or uuid
+echo "onepassword_aws_item is set to: '${onepassword_aws_item:-AWS}'"
 
 
 ## preflight checks
@@ -88,6 +105,10 @@ fi
 if [[ -z ${aws_target_subaccount_session_seconds} ]]; then
   echo "Please set the aws_target_subaccount_session_seconds environment variable."
   return
+fi
+if [[ -z ${onepassword_aws_item} ]]; then
+    echo "Please set the onepassword_aws_item shell variable."
+    return
 fi
 
 #### wipe previous terminal env vars set by this utility
@@ -118,16 +139,9 @@ echo
 
 #### this content is sourced from https://github.com/sweharris/aws-cli-mfa/blob/master/get-aws-creds and has been modified a bit ##
 
-# This uses MFA devices to get temporary (eg 12 hour) credentials.  Requires
-# a TTY for user input.
+# This uses MFA devices to get temporary (eg 1 hour) credentials.
 #
 # GPL 2 or higher
-
-if [ ! -t 0 ]
-then
-  echo Must be on a tty >&2
-  return
-fi
 
 if [ -n "$AWS_SESSION_TOKEN" ]
 then
@@ -167,16 +181,15 @@ fi
 echo -e "Your MFA device is: ${blue}${device}${reset}" >&2
 
 ## option 1: manual mfa token entry 
-echo -ne "Enter your MFA code now: ${blue}" >&2
-read code
-echo -e "${reset}" >&2
+# echo -ne "Enter your MFA code now: ${blue}" >&2
+# read code
+# echo -e "${reset}" >&2
 
 ## option 2: automated mfa token entry
-# echo -ne "Automating MFA input... ${blue}" >&2
-# totp=$(cat /${HOME}/.aws/mfa/isc-login_totp)
-# code=$(oathtool -b --totp ${totp})
-# echo -e "${reset}" >&2
-# echo
+echo -ne "Automating MFA input... ${blue}" >&2
+read code < <(op item get "$onepassword_aws_item" --otp)
+echo -e "${reset}" >&2
+echo
 
 tokens=$(aws sts get-session-token --serial-number "$device" --token-code $code)
 
