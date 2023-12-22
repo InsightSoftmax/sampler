@@ -137,16 +137,9 @@ echo
 
 #### this content is sourced from https://github.com/sweharris/aws-cli-mfa/blob/master/get-aws-creds and has been modified a bit ##
 
-# This uses MFA devices to get temporary (eg 12 hour) credentials.  Requires
-# a TTY for user input.
+# This uses MFA devices to get temporary (eg 1 hour) credentials.
 #
 # GPL 2 or higher
-
-if [ ! -t 0 ]
-then
-  echo Must be on a tty >&2
-  return
-fi
 
 if [ -n "$AWS_SESSION_TOKEN" ]
 then
