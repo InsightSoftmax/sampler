@@ -9,26 +9,26 @@
 ## usage: $ chmod +x ./get-aws-subaccount-session.sh
 ## usage: $ . ./get-aws-subaccount-session.sh
 
+## Alias Example
+##  alias xx-dev=". $HOME/sampler/aws-cli/get-aws-subaccount-session.sh isc-cus-quasimodo-dev <AWS_ID> <ROLE>"
+
 app_title="** ISC AWS Subaccount Session Loader **"
 app_subtitle="** Establish an AWS CLI session with MFA to an AWS subaccount using role assumption **"
 
-
+unset AWS_SESSION_TOKEN AWS_SECRET_ACCESS_KEY AWS_ACCESS_KEY_ID
 
 
 
 ## alter the values below to your target subaccount and target role as needed ## 
 ## optionally, you can move this var declaration outta here and into other parts of your terminal environment as you see fit
 
+# alias qu-dev=". ~/projects/sampler/aws-cli/get-aws-subaccount-session.sh name id role"
 export AWS_PROFILE=default
-export aws_target_subaccount_name=gross-eng-dev
-export aws_target_subaccount_id=235758441054
-export aws_target_subaccount_role=isc-login_assumed-role_eng_power-users
+export aws_target_subaccount_name=$1
+export aws_target_subaccount_id=$2
+export aws_target_subaccount_role=$3
 
 ################################################################################
-
-
-
-
 
 ## init
 
@@ -129,9 +129,9 @@ fi
 echo -e "Your MFA device is: ${blue}${device}${reset}" >&2
 
 ## option 1: manual mfa token entry 
-echo -ne "Enter your MFA code now: ${blue}" >&2
-read code
-echo -e "${reset}" >&2
+# echo -ne "Enter your MFA code now: ${blue}" >&2
+# read code
+# echo -e "${reset}" >&2
 
 ## option 2: automated mfa token entry
 # echo -ne "Automating MFA input... ${blue}" >&2
@@ -139,6 +139,9 @@ echo -e "${reset}" >&2
 # code=$(oathtool -b --totp ${totp})
 # echo -e "${reset}" >&2
 # echo
+
+## option 3
+code=$(op item get AWS --otp)
 
 tokens=$(aws sts get-session-token --serial-number "$device" --token-code $code)
 
