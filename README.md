@@ -25,8 +25,9 @@ terminal session.
 ### Prerequisites
 
 Before using this script, ensure that:
-* You have AWS CLI installed and configured 
-with your base account credentials.
+* You have [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+installed and configured with your base account
+credentials.
 * Your IAM user has permissions to assume 
 a role in the subaccount.
 * You have an MFA device registered for 
