@@ -90,7 +90,7 @@ TOTP generation.
 
 ### Additional Notes
 * AWS credentials are temporary and expire 
-after the defined session duration.
+after the defined session duration (up to one hour).
 * You can modify the target subaccount, role,
 and session time inside the script.
 * This script does not modify AWS CLI 
