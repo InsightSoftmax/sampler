@@ -39,7 +39,7 @@ chmod +x aws-cli/get-aws-subaccount-session.sh
 ```
 2. Run the Script (Must Be Sourced)
 ```bash
-. aws-cli/get-aws-subaccount-session.sh
+source aws-cli/get-aws-subaccount-session.sh
 ```
 Important: Using `.` (dot-space) ensures 
 the session credentials persist in your terminal.
