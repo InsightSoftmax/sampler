@@ -33,22 +33,15 @@ a role in the subaccount.
 authentication.
 
 ### Usage
-1. Make the Script Executable (Only Once)
-```bash
-chmod +x aws-cli/get-aws-subaccount-session.sh
-```
-2. Run the Script (Must Be Sourced)
+1. Run the Script (Must Be Sourced)
 ```bash
 source aws-cli/get-aws-subaccount-session.sh
 ```
-Important: Using `.` (dot-space) ensures 
-the session credentials persist in your terminal.
-
-3. Enter MFA Code
+2. Enter MFA Code
 When prompted, enter your MFA token to 
 authenticate.
 
-4. Verify the Session
+3. Verify the Session
 After running the script, check if your AWS 
 CLI session is active:
 ```bash
