@@ -47,13 +47,15 @@ echo
 echo Loading AWS CLI configs...
 echo
 
-#### alter the values below to your target subaccount and target role as needed ## 
+#### alter the values below to your target subaccount and target role as needed ##
+#### You may set these environment variables before sourcing the
+#### script to override the default values.
 
-export AWS_PROFILE=default
-export aws_target_subaccount_name=gross-eng-dev
-export aws_target_subaccount_id=235758441054
-export aws_target_subaccount_role=isc-login_assumed-role_eng_power-users
-export aws_target_subaccount_session_seconds=3600
+export AWS_PROFILE=${AWS_PROFILE:-default}
+export aws_target_subaccount_name=${aws_target_subaccount_name:-gross-eng-dev}
+export aws_target_subaccount_id=${aws_target_subaccount_id:-235758441054}
+export aws_target_subaccount_role=${aws_target_subaccount_role:-isc-login_assumed-role_eng_power-users}
+export aws_target_subaccount_session_seconds=${aws_target_subaccount_session_seconds:-3600}
 
 ##################################################################################
 
